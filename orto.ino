@@ -15,10 +15,10 @@ RTC_DS1307 rtc;
 
 LiquidCrystal_I2C lcd(0x27,20,4);
 
-DateTime p1Start(0,0,0, 2,00,0); DateTime p1End(0,0,0, 2,30,0);
+DateTime p1Start(0,0,0, 2,00,0); DateTime p1End(0,0,0, 2,15,0);
 DateTime p2Start(0,0,0, 2,30,0); DateTime p2End(0,0,0, 3,00,0);
-DateTime p3Start(0,0,0, 3,00,0); DateTime p3End(0,0,0, 3,30,0);
-DateTime p4Start(0,0,0, 3,30,0); DateTime p4End(0,0,0, 3,45,0);
+DateTime p3Start(0,0,0, 3,15,0); DateTime p3End(0,0,0, 3,45,0);
+DateTime p4Start(0,0,0, 4,00,0); DateTime p4End(0,0,0, 4,30,0);
 
 bool alternate_days = false;
 bool work = true;
@@ -65,10 +65,8 @@ void setup() {
     p2Start = now + TimeSpan(0,0, 1,0); p2End = now + TimeSpan(0,0, 2,0);
     p3Start = now + TimeSpan(0,0, 2,0); p3End = now + TimeSpan(0,0, 3,0);
     p4Start = now + TimeSpan(0,0, 3,0); p4End = now + TimeSpan(0,0, 4,0);
-  }
-
-  if(digitalRead(ALTERNATE_DAYS)){
-    lcd.setCursor(0,3);
+  }else if(digitalRead(ALTERNATE_DAYS)){
+    lcd.setCursor(0,2);
     lcd.print("INF: alternate days");
     alternate_days=true;
     work=false; // so that on midnight will be set to true and pump will work during the night
@@ -81,18 +79,19 @@ void setup() {
   lcd.print("1:O  2:O    3:O  4:O");
 }
 
-DateTime now; int nm; int nh;
+DateTime now; int nm; int nh; int ns; int ny; int nM; int nd; 
 bool backlight = true;
 bool pump1 = false, pump2 = false, pump3 = false, pump4 = false;
 
 void loop() {
   // get time
   now = rtc.now();
-  nm = now.minute(); nh = now.hour();
+  nm = now.minute(); nh = now.hour(); ns = now.second();
+  ny = now.year(); nM = now.month(); nd = now.day();
 
   lcd.setCursor(0,0);
-  lcd.print(String() + format(now.hour()) + ":" + format(now.minute()) + ":" + format(now.second()) + "  " + 
-              format(now.day()) + "/" + format(now.month()) + "/" + now.year());
+  lcd.print(String() + format(nh) + ":" + format(nm) + ":" + format(ns) + "  " + 
+              format(nd) + "/" + format(nM) + "/" + ny);
 
   if(digitalRead(BACKLIGHT)){
     backlight = !backlight;
